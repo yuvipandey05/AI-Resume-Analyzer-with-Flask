@@ -11,6 +11,9 @@ A Flask-based AI Resume Analyzer with ATS scoring, keyword matching, resume rank
 - Recruiter Ranking Dashboard
 - AI Assistant
 
+## Preview
+![Dashboard](screenshots/dashboard.png)
+
 ## Installation
 
 ```bash
