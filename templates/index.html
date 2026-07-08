@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV-PRO | Premium AI Resume Analyzer & Recruiter Terminal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Glow Background Blobs -->
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+    <div class="glow-blob blob-3"></div>
+    
+    <div class="app-container">
+        <!-- Navigation Header -->
+        <header class="app-header">
+            <div class="header-logo-brand">
+                <span class="logo-badge">PRO</span>
+                <h1>CV-PRO <span class="gradient-text">AI Analyzer</span></h1>
+            </div>
+            <div class="nav-tabs-wrapper">
+                <button class="nav-tab active" id="tab-candidate-btn" onclick="switchTab('candidate')">
+                    <span class="tab-icon">👤</span> Candidate Workspace
+                </button>
+                <button class="nav-tab" id="tab-recruiter-btn" onclick="switchTab('recruiter')">
+                    <span class="tab-icon">💼</span> Recruiter Terminal
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <main class="main-dashboard-grid">
+            
+            <!-- Left Side: Chatbot Panel (Persistent across views) -->
+            <section class="panel chatbot-panel">
+                <div class="chatbot-header">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="bot-info">
+                        <h3>CV-PRO Assistant</h3>
+                        <p class="status-indicator"><span class="pulse-dot"></span> Ready to analyze</p>
+                    </div>
+                </div>
+                
+                <!-- Chat Message Box -->
+                <div class="chat-messages-container" id="chat-messages">
+                    <div class="chat-message bot-msg">
+                        Hi! I am your AI career coach helper. Upload your resume and I can summarize your experience, suggest skills, or highlight formatting issues. Try asking me once your resume is loaded!
+                    </div>
+                </div>
+
+                <!-- Suggested Quick Prompts -->
+                <div class="quick-prompts-container">
+                    <button class="quick-prompt-btn" onclick="sendQuickPrompt('Extract my top skills')">🔑 Top Skills</button>
+                    <button class="quick-prompt-btn" onclick="sendQuickPrompt('What are the main issues with my resume?')">⚠️ Find Issues</button>
+                    <button class="quick-prompt-btn" onclick="sendQuickPrompt('Extract my education details')">🎓 Education</button>
+                </div>
+
+                <!-- Chat Input area -->
+                <form id="chat-input-form" onsubmit="handleChatSubmit(event);" class="chat-input-wrapper">
+                    <input type="text" id="chat-user-message" placeholder="Ask about your resume..." autocomplete="off">
+                    <button type="submit" class="chat-send-btn" title="Send Message">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9-2-9-15-9 15 9 2zm0 0v-8" />
+                        </svg>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Right Side: Action Panel & Results Dashboard -->
+            <div class="workspace-views-container">
+                
+                <!-- 1. CANDIDATE WORKSPACE -->
+                <div class="workspace-view active" id="view-candidate">
+                    <div class="grid-two-columns">
+                        
+                        <!-- Left Panel: Candidate Inputs -->
+                        <section class="panel action-panel">
+                            <h2 class="section-title"><span class="icon">📥</span> Analyze Your CV</h2>
+                            <p class="section-subtitle">Find matching keywords, score format, and check direct ATS compatibility.</p>
+                            
+                            <form id="candidate-form" onsubmit="event.preventDefault();">
+                                <!-- File Upload zone -->
+                                <div class="upload-container" id="candidate-drop-zone">
+                                    <input type="file" id="candidate-file-input" accept=".pdf" class="file-input-hidden">
+                                    <div class="upload-content">
+                                        <div class="cloud-icon-wrapper">
+                                            <svg class="cloud-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                            </svg>
+                                        </div>
+                                        <h3>Drag & drop your PDF resume</h3>
+                                        <p class="file-limits">Supports standard PDF format only</p>
+                                        <span class="browse-btn">Browse File</span>
+                                    </div>
+                                    <div class="file-selected-content" id="candidate-file-info" style="display: none;">
+                                        <div class="pdf-icon-wrapper">📄</div>
+                                        <div class="file-meta">
+                                            <h4 id="candidate-file-name">filename.pdf</h4>
+                                            <p id="candidate-file-size">0 KB</p>
+                                        </div>
+                                        <button type="button" class="remove-file-btn" id="candidate-remove-file" title="Remove File">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Job Description Textarea -->
+                                <div class="input-group">
+                                    <div class="input-label-row">
+                                        <label for="candidate-jd-input">Job Description (Optional)</label>
+                                        <span class="optional-badge">Optional for direct check</span>
+                                    </div>
+                                    <textarea id="candidate-jd-input" placeholder="Paste the target job description here to check key matches and missing keywords... Leaving this blank runs a general format and structure ATS score."></textarea>
+                                </div>
+
+                                <!-- Action Buttons row -->
+                                <div class="action-buttons-row">
+                                    <button type="button" class="btn-secondary" id="direct-ats-btn">
+                                        🛡️ Direct ATS Check
+                                    </button>
+                                    <button type="submit" class="action-btn" id="candidate-analyze-btn">
+                                        <span>Analyze Match</span>
+                                        <svg class="btn-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+
+                        <!-- Right Panel: Candidate Results Dashboard -->
+                        <section class="panel results-panel" id="candidate-results-panel">
+                            <!-- Empty Awaiting State -->
+                            <div class="empty-state" id="candidate-empty-state">
+                                <div class="empty-icon-wrapper">📊</div>
+                                <h2>Ready for Analysis</h2>
+                                <p>Upload your PDF resume. You can check your general formatting directly, or paste a Job Description for match scoring.</p>
+                            </div>
+
+                            <!-- Loading State -->
+                            <div class="loading-state" id="candidate-loading-state" style="display: none;">
+                                <div class="spinner-wrapper">
+                                    <div class="spinner"></div>
+                                    <div class="spinner-glow"></div>
+                                </div>
+                                <h2>Processing Resume...</h2>
+                                <p>Extracting PDF layout details, auditing vocabulary, and evaluating keyword alignments...</p>
+                            </div>
+
+                            <!-- Dashboard Content (Rendered Dynamically) -->
+                            <div class="dashboard-content" id="candidate-dashboard-content" style="display: none;">
+                                <h2 class="section-title"><span class="icon">📈</span> Evaluation Metrics</h2>
+                                
+                                <!-- Top Circular Gauge & Stats Column -->
+                                <div class="overview-section">
+                                    <!-- Dynamic Circular Chart -->
+                                    <div class="gauge-card">
+                                        <div class="gauge-container">
+                                            <svg class="gauge-svg" viewBox="0 0 120 120">
+                                                <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
+                                                <circle class="gauge-fill" id="candidate-gauge-fill" cx="60" cy="60" r="50"></circle>
+                                            </svg>
+                                            <div class="gauge-text">
+                                                <span class="gauge-number" id="candidate-score-text">0%</span>
+                                                <span class="gauge-label" id="candidate-score-label">Match Score</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mini Stats List -->
+                                    <div class="stats-grid">
+                                        <div class="stat-card">
+                                            <div class="stat-header">Score Type</div>
+                                            <div class="stat-value" id="stats-score-type">Job Match</div>
+                                            <div class="stat-indicator" id="stats-score-indicator">--</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-header">Extracted Words</div>
+                                            <div class="stat-value" id="stats-words-val">0</div>
+                                            <div class="stat-sub">Optimized: 400-800</div>
+                                        </div>
+                                        <div class="stat-card" id="jd-words-card">
+                                            <div class="stat-header">Job Desc Words</div>
+                                            <div class="stat-value" id="stats-jd-words-val">0</div>
+                                            <div class="stat-sub">Target length</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Feedback Advice Strip -->
+                                <div class="suggestion-box" id="candidate-suggestion-box">
+                                    <div class="suggestion-icon" id="candidate-suggestion-icon">💡</div>
+                                    <div class="suggestion-text">
+                                        <h4 id="candidate-suggestion-title">Analysis Feedback</h4>
+                                        <p id="candidate-suggestion-desc">Awaiting results description...</p>
+                                    </div>
+                                </div>
+
+                                <!-- Tabs/Accordions for matching components -->
+                                <div class="details-section">
+                                    <!-- Accordion A: Issues Identified (ALWAYS VISIBLE - REQ 6) -->
+                                    <div class="accordion-item expanded" id="accordion-issues">
+                                        <button class="accordion-toggle" onclick="toggleAccordion(this)">
+                                            <span>⚠️ Format & structural issues detected (<span id="issues-count">0</span>)</span>
+                                            <span class="arrow">▼</span>
+                                        </button>
+                                        <div class="accordion-content">
+                                            <ul class="issues-list" id="issues-list-container">
+                                                <!-- Dynamic list items -->
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- Accordion B: Matching Skills (JD Match Mode Only) -->
+                                    <div class="accordion-item expanded" id="accordion-matching-skills">
+                                        <button class="accordion-toggle" onclick="toggleAccordion(this)">
+                                            <span>🎯 Matching Skills & Keywords (<span id="matching-skills-count">0</span>)</span>
+                                            <span class="arrow">▼</span>
+                                        </button>
+                                        <div class="accordion-content">
+                                            <div class="tags-container" id="matching-skills-tags">
+                                                <!-- Dynamic green pills -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Accordion C: Missing Keywords (JD Match Mode Only) -->
+                                    <div class="accordion-item expanded" id="accordion-missing-keywords">
+                                        <button class="accordion-toggle" onclick="toggleAccordion(this)">
+                                            <span>🔍 Missing Job Keywords (<span id="missing-keywords-count">0</span>)</span>
+                                            <span class="arrow">▼</span>
+                                        </button>
+                                        <div class="accordion-content">
+                                            <div class="tags-container" id="missing-keywords-tags">
+                                                <!-- Dynamic red pills -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Accordion D: Top Keywords Cloud (Word Cloud fallback) -->
+                                    <div class="accordion-item expanded" id="accordion-wordcloud">
+                                        <button class="accordion-toggle" onclick="toggleAccordion(this)">
+                                            <span>☁️ Top Resume Keywords</span>
+                                            <span class="arrow">▼</span>
+                                        </button>
+                                        <div class="accordion-content">
+                                            <div class="wordcloud-container" id="wordcloud-tags">
+                                                <!-- Dynamic tag cloud -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action bar -->
+                                <div class="results-actions">
+                                    <button class="btn-secondary" id="candidate-download-btn">
+                                        <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Download Detailed Report
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- 2. RECRUITER TERMINAL (Tab 2) -->
+                <div class="workspace-view" id="view-recruiter">
+                    <div class="grid-two-columns">
+                        
+                        <!-- Left Panel: Recruiter Inputs -->
+                        <section class="panel action-panel">
+                            <h2 class="section-title"><span class="icon">💼</span> Recruiter Screening</h2>
+                            <p class="section-subtitle">Upload multiple candidate resumes to compare, score, and rank them against a target role description.</p>
+                            
+                            <form id="recruiter-form" onsubmit="event.preventDefault();">
+                                <!-- Target JD input (Required) -->
+                                <div class="input-group">
+                                    <label for="recruiter-jd-input">Role Job Description</label>
+                                    <textarea id="recruiter-jd-input" placeholder="Paste the target job description here..." required></textarea>
+                                </div>
+
+                                <!-- Multi-file upload zone -->
+                                <div class="upload-container" id="recruiter-drop-zone">
+                                    <input type="file" id="recruiter-file-input" accept=".pdf" class="file-input-hidden" multiple>
+                                    <div class="upload-content">
+                                        <div class="cloud-icon-wrapper">
+                                            <svg class="cloud-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </div>
+                                        <h3>Upload Resumes (Multi-PDF)</h3>
+                                        <p class="file-limits">Drag & drop multiple candidate resumes at once</p>
+                                        <span class="browse-btn">Select Files</span>
+                                    </div>
+                                    <div class="file-selected-content" id="recruiter-file-info" style="display: none; flex-direction: column; align-items: stretch; gap: 0.5rem;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                <span class="pdf-icon-wrapper" style="font-size: 1.5rem; padding: 0.35rem;">📂</span>
+                                                <div>
+                                                    <h4 id="recruiter-files-count" style="font-size: 0.95rem; color: white;">0 files selected</h4>
+                                                    <p id="recruiter-files-size" style="font-size: 0.8rem; color: var(--text-muted);">0 KB total</p>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="remove-file-btn" id="recruiter-remove-files" title="Clear All Files">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <!-- File name pill list -->
+                                        <div class="file-pill-list" id="recruiter-pill-list"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Rank Button -->
+                                <button type="submit" class="action-btn" id="recruiter-analyze-btn">
+                                    <span>Score & Rank Resumes</span>
+                                    <svg class="btn-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </section>
+
+                        <!-- Right Panel: Recruiter Ranked Leaderboard -->
+                        <section class="panel results-panel" id="recruiter-results-panel">
+                            <!-- Empty Awaiting State -->
+                            <div class="empty-state" id="recruiter-empty-state">
+                                <div class="empty-icon-wrapper">🏆</div>
+                                <h2>Candidate Leaderboard</h2>
+                                <p>Upload candidate resumes, paste a Job Description, and click "Score & Rank" to view sorted evaluations.</p>
+                            </div>
+
+                            <!-- Loading State -->
+                            <div class="loading-state" id="recruiter-loading-state" style="display: none;">
+                                <div class="spinner-wrapper">
+                                    <div class="spinner"></div>
+                                    <div class="spinner-glow"></div>
+                                </div>
+                                <h2>Auditing Candidates...</h2>
+                                <p>Ranking uploaded files against job description guidelines. Running matching algorithms...</p>
+                            </div>
+
+                            <!-- Leaderboard Dashboard (Visible after search) -->
+                            <div class="dashboard-content" id="recruiter-dashboard-content" style="display: none;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                                    <h2 class="section-title" style="margin-bottom: 0;"><span class="icon">🏆</span> Ranked Candidates</h2>
+                                    <button class="btn-export-csv" onclick="exportRecruiterCSV()">📥 Export CSV</button>
+                                </div>
+
+                                <!-- Leaderboard Table -->
+                                <div class="leaderboard-table-container">
+                                    <table class="leaderboard-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Rank</th>
+                                                <th>Candidate Name</th>
+                                                <th style="text-align: right;">Match Score</th>
+                                                <th style="text-align: center;">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="leaderboard-rows">
+                                            <!-- Dynamic Rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Candidate Detailed Comparison Modal (for Recruiter Workspace) -->
+    <div class="modal-overlay" id="details-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modal-candidate-name">Candidate Name</h3>
+                    <p id="modal-candidate-filename">resume.pdf</p>
+                </div>
+                <button class="close-modal-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-metrics-grid">
+                    <div class="modal-metric-card">
+                        <span class="m-label">ATS Match Score</span>
+                        <span class="m-value" id="modal-candidate-score">0%</span>
+                        <div class="progress-bar-container" style="margin-top: 0.5rem; height: 6px;">
+                            <div class="progress-bar-fill" id="modal-candidate-score-bar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-metric-card">
+                        <span class="m-label">Resume Length</span>
+                        <span class="m-value" id="modal-candidate-words">0 words</span>
+                    </div>
+                </div>
+
+                <div class="modal-sections">
+                    <div class="modal-section">
+                        <h4>🎯 Matching Keywords & Skills (<span id="modal-candidate-skills-count">0</span>)</h4>
+                        <div class="tags-container" id="modal-candidate-skills-tags" style="margin-top: 0.5rem;">
+                            <!-- pills -->
+                        </div>
+                    </div>
+                    
+                    <div class="modal-section" style="margin-top: 1.5rem;">
+                        <h4>⚠️ Missing Keywords (<span id="modal-candidate-missing-count">0</span>)</h4>
+                        <div class="tags-container" id="modal-candidate-missing-tags" style="margin-top: 0.5rem;">
+                            <!-- pills -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script inclusion -->
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Inline layouts tab switcher helper
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.workspace-view').forEach(view => view.classList.remove('active'));
+            
+            if (tab === 'candidate') {
+                document.getElementById('tab-candidate-btn').classList.add('active');
+                document.getElementById('view-candidate').classList.add('active');
+            } else {
+                document.getElementById('tab-recruiter-btn').classList.add('active');
+                document.getElementById('view-recruiter').classList.add('active');
+            }
+        }
+        
+        function toggleAccordion(button) {
+            const item = button.parentElement;
+            item.classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>
