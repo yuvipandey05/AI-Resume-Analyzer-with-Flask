@@ -1,0 +1,23 @@
+# AI Resume Analyzer with Flask
+
+A Flask-based AI Resume Analyzer with ATS scoring, keyword matching, resume ranking, and recruiter dashboard.
+
+## Features
+
+- ATS Compatibility Check
+- Resume Analysis
+- Job Description Matching
+- Missing Keywords Detection
+- Recruiter Ranking Dashboard
+- AI Assistant
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+Open:
+
+http://127.0.0.1:5000
