@@ -1,6 +1,14 @@
 # AI Resume Analyzer with Flask
 
 A Flask-based AI Resume Analyzer with ATS scoring, keyword matching, resume ranking, and recruiter dashboard.
+## Tech Stack
+
+- Python
+- Flask
+- NLTK
+- Scikit-learn
+- PyPDF2
+- HTML/CSS/JavaScript
 
 ## Features
 
